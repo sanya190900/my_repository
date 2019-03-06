@@ -1,105 +1,121 @@
-package com;
 
 public class Main {
-
     public static void main(String[] args) {
+        double[][] vyborka1, vyborka2;
+        double[] selection1 = {2,4,5,5,6,7,7,9,9,11,12,14};
+        double[] selection2 = {6,12,15,16,18,21,21,27,27,33,36,41};
+        int length_selection1 = selection1.length;
+        int length_selection2 = selection2.length;
+        int num_max, number_of_intervals, interval, min_value, max_value;
 
-        int x[][] = new int[8][3];
-        double x_norm[][] = new double[8][3];
-        int y[] = new int[8];
-        double y_etalon;
-        int a[] = {1,2,3,4};
-        double dy_min = -1000;
-        double x0[] = new double[3];
-        double dx[] = new double[3];
-        int x_max[] = {-1,-1,-1};
-        int x_min[] = {21,21,21};
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 3; j++) {
-                x[i][j] = (int)(Math.random()*20);
-            }
-            y[i] = a[0] + a[1]*x[i][0] + a[2]*x[i][1] + a[3]*x[i][2];
+        System.out.print("First selection ");
+        for (int i = 0; i < length_selection1; i++) {
+            System.out.print(" " + selection1[i]);
         }
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (x_max[i] < x[j][i]) x_max[i] = x[j][i];
-                if (x_min[i] > x[j][i]) x_min[i] = x[j][i];
-            }
-
-            x0[i] = (x_max[i] + x_min[i])/2.;
-            dx[i] = x0[i] - (double)x_min[i];
+        System.out.print("\nSecond selection ");
+        for (int j = 0; j < length_selection2; j++) {
+            System.out.print(" " + selection2[j]);
         }
 
+        System.out.println("\nLength of first selection : " + length_selection1);
+        System.out.println("Length of second selection : " + length_selection2);
 
-        System.out.println("№\tX1\tX2\tX3\tY\t \tXH1\t\tXH2\t\tXH3");
+        if (length_selection1 <= length_selection2) num_max = length_selection2;
+        else num_max = length_selection1;
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 3; j++) {
-                x_norm[i][j] = ((double) x[i][j] - x0[j])/dx[j];
-            }
-            System.out.print( (i+1) + "\t" + x[i][0] +"\t" + x[i][1 ]+ "\t" + x[i][2] + "\t");
-            System.out.print(y[i] + "\t \t");
-            System.out.printf("%.2f\t%.2f\t%.2f", x_norm[i][0], x_norm[i][1], x_norm[i][2]);
-            System.out.println();
+        if (selection1[0] <= selection2[0]) min_value = (int) selection1[0];
+        else min_value = (int) selection2[0];
+
+        if (selection1[length_selection1 - 1] <= selection2[length_selection2 - 1])
+            max_value = (int) selection2[length_selection2 - 1];
+        else max_value = (int) selection1[length_selection1 - 1];
+
+        if (num_max <= 1) {
+            number_of_intervals = 1;
+        } else if (num_max <= 3) {
+            number_of_intervals = 2;
+        } else if (num_max <= 12) {
+            number_of_intervals = 3;
+        } else if (num_max <= 20) {
+            number_of_intervals = 4;
+        } else {
+            number_of_intervals = 5;
         }
 
-        System.out.print("x0\t");
-        for (int i = 0; i < 3; i++) {
-            System.out.print(x0[i] + "\t");
-        }
-        System.out.println();
+        interval = (max_value - min_value) / number_of_intervals;
+        vyborka1 = new double[number_of_intervals][length_selection1+1];
+        vyborka2 = new double[number_of_intervals][length_selection2+1];
 
-        System.out.print("dx\t");
-        for (int i = 0; i < 3; i++) {
-            System.out.print(dx[i] + "\t");
-        }
+        for (int i = 0; i < number_of_intervals; i++) {
+            int min_predel, max_predel;
+            int k = 0;
 
-        y_etalon = a[0] + a[1]*x0[0]+a[2]*x0[1]+a[3]*x0[2];
-        System.out.println("\nЕталонне значення У =  " + y_etalon);
+            min_predel = min_value;
+            max_predel = min_value + interval;
+            for (int j = 0; j < length_selection1; j++) {
+                if (selection1[j] < max_predel && selection1[j] >= min_predel || number_of_intervals-i==1 && selection1[j]>=max_predel) {
+                    vyborka1[i][k] = selection1[j];
+                    System.out.print(vyborka1[i][k] + " ");
+                    k++;
 
-        for (int i = 0; i < 8; i++) {
-            double temp = y_etalon - (double)y[i];
-            if (temp < 0)
-                if (dy_min < temp)
-                    dy_min = temp;
-        }
-        int index;
-        for (index = 0; index < 8; index++) {
-            double temp = y_etalon - dy_min;
-            if (y[index] == temp) break;
-        }
-
-        double y_average = 0;
-        for (int i = 0; i < 8 ; i++) {
-            y_average+=y[i];
-        }
-        y_average /=8;
-
-        System.out.println("Середнє значення : " + y_average);
-        double res;
-        res = Math.pow((y_etalon - y_average),2);
-
-        System.out.println(" Результат роботи(Гуменюк) : " + res);
-
-
-
-        double y_avr = 0;
-        for (int i = 0; i < 8; i++) y_avr += y[i];
-        y_avr /= 8;
-        dy_min = 1000;
-        for (int i = 0; i < 8; i++) {
-            double temp = y_avr - (double)y[i];
-            if (temp > 0)
-                if (dy_min > temp)
-                {
-                    dy_min = temp;
-                    index = i;
                 }
-        }
-        System.out.println("Точка плану (Повх) : У(" + x[index][0] + ", " + x[index][1] + ", " + x[index][2] + ") = " + y[index]);
+            }
+            //System.out.println(interval);
+            System.out.println();
+            vyborka1[i][k] = Double.MAX_VALUE;
+            k = 0;
+            min_predel = min_value;
+            max_predel = min_value + interval;
 
-        System.out.println("Точка плану за варіантом 104 : У(" + x[index][0] + ", " + x[index][1] + ", " + x[index][2] + ") = " + y[index]);
+            for (int j = 0; j < length_selection2; j++) {
+                if (selection2[j] < max_predel && selection2[j] >= min_predel || number_of_intervals-i==1 && selection2[j]>=max_predel) {
+                    vyborka2[i][k] = selection2[j];
+                    k++;
+                }
+            }
+            vyborka2[i][k] = Double.MAX_VALUE;
+            min_value += interval;
+        }
+
+        double hikvadrat = 0;
+        double sum = 0;
+        int c = 0;
+        int d = 0;
+        hikvadrat = length_selection1*length_selection2;
+        for (int i = 0; i < number_of_intervals; i++) {
+            for (int j = 0; j < length_selection1+1; j++)
+            {
+                if (vyborka1[i][j] == Double.MAX_VALUE)
+                    break;
+                c++;
+            }
+            for (int j = 0; j < length_selection2+1; j++)
+            {
+                if (vyborka2[i][j] == Double.MAX_VALUE)
+                    break;
+                d++;
+            }
+            System.out.println(c + " " + d);
+            sum += (1./(c+d))*Math.pow(((double)c/length_selection1) - ((double)d/length_selection2),2);
+            c=d=0;
+
+        }
+
+        hikvadrat*=sum;
+        System.out.println("Xi^2 = " + hikvadrat);
+
+        double[][] massive_for_probability = {
+                {0,0.001,0.004,0.016,0.064,0.158,0.455,1.074,1.642,2.71,3.84,100},
+                {0.02,0.04,0.103,0.211,0.446,0.713,1.386,2.41,3.22,4.6,5.99,100},
+                {0.115,0.185,0.352,0.584,1.005,1.424,2.37,3.66,4.63,6.25,7.82,100}
+        };
+        double[] massive_probabilities = {0.01,0.02,0.05,0.1,0.2,0.3,0.5,0.7,0.8,0.9,0.95,1};
+
+        int t;
+        for (t = 0; t < 11; t++) {
+            if (hikvadrat < massive_for_probability[number_of_intervals-1-1][t]) break;
+        }
+        System.out.println("Probability is now between " + massive_probabilities[t-1] + " and " + massive_probabilities[t]);
     }
 }
